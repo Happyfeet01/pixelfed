@@ -29,11 +29,12 @@ return [
 		],
 
 		'local' => [
+			'cached' => env('INSTANCE_PUBLIC_TIMELINE_CACHED', false),
 			'is_public' => env('INSTANCE_PUBLIC_LOCAL_TIMELINE', false)
 		],
 
 		'network' => [
-			'cached' => env('PF_NETWORK_TIMELINE') ? env('INSTANCE_NETWORK_TIMELINE_CACHED', true) : false,
+			'cached' => env('PF_NETWORK_TIMELINE') ? env('INSTANCE_NETWORK_TIMELINE_CACHED', false) : false,
 			'cache_dropoff' => env('INSTANCE_NETWORK_TIMELINE_CACHE_DROPOFF', 100),
 			'max_hours_old' => env('INSTANCE_NETWORK_TIMELINE_CACHE_MAX_HOUR_INGEST', 6)
 		]
@@ -110,7 +111,8 @@ return [
 
 	'user_filters' => [
 		'max_user_blocks' => env('PF_MAX_USER_BLOCKS', 50),
-		'max_user_mutes' => env('PF_MAX_USER_MUTES', 50)
+		'max_user_mutes' => env('PF_MAX_USER_MUTES', 50),
+		'max_domain_blocks' => env('PF_MAX_DOMAIN_BLOCKS', 50),
 	],
 
 	'reports' => [
@@ -128,5 +130,19 @@ return [
 
 	'banner' => [
 		'blurhash' => env('INSTANCE_BANNER_BLURHASH', 'UzJR]l{wHZRjM}R%XRkCH?X9xaWEjZj]kAjt')
-	]
+	],
+
+    'parental_controls' => [
+        'enabled' => env('INSTANCE_PARENTAL_CONTROLS', false),
+
+        'limits' => [
+            'respect_open_registration' => env('INSTANCE_PARENTAL_CONTROLS_RESPECT_OPENREG', true),
+            'max_children' => env('INSTANCE_PARENTAL_CONTROLS_MAX_CHILDREN', 1),
+            'auto_verify_email' => true,
+        ],
+    ],
+
+    'software-update' => [
+        'disable_failed_warning' => env('INSTANCE_SOFTWARE_UPDATE_DISABLE_FAILED_WARNING', false)
+    ],
 ];

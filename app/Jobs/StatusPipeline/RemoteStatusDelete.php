@@ -39,8 +39,8 @@ use App\Services\AccountService;
 use App\Services\CollectionService;
 use App\Services\StatusService;
 use App\Jobs\MediaPipeline\MediaDeletePipeline;
-use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Services\NotificationService;
+use App\Services\Account\AccountStatService;
 
 class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
 {
@@ -109,9 +109,7 @@ class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
         }
 
         StatusService::del($status->id, true);
-
-        DecrementPostCount::dispatch($status->profile_id)->onQueue('inbox');
-
+        AccountStatService::decrementPostCount($status->profile_id);
         return $this->unlinkRemoveMedia($status);
     }
 
@@ -174,10 +172,7 @@ class RemoteStatusDelete implements ShouldQueue, ShouldBeUniqueUntilProcessing
             ->whereObjectId($status->id)
             ->delete();
         StatusArchived::whereStatusId($status->id)->delete();
-        $statusHashtags = StatusHashtag::whereStatusId($status->id)->get();
-        foreach($statusHashtags as $stag) {
-        	$stag->delete();
-        }
+        StatusHashtag::whereStatusId($status->id)->delete();
         StatusView::whereStatusId($status->id)->delete();
         Status::whereInReplyToId($status->id)->update(['in_reply_to_id' => null]);
 

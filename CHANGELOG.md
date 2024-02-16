@@ -1,6 +1,28 @@
 # Release Notes
 
-## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.9...dev)
+## [Unreleased](https://github.com/pixelfed/pixelfed/compare/v0.11.12...dev)
+-  ([](https://github.com/pixelfed/pixelfed/commit/))
+
+## [v0.11.12 (2024-02-16)](https://github.com/pixelfed/pixelfed/compare/v0.11.11...v0.11.12)
+
+### Features
+- Autospam Live Filters - block remote activities based on comma separated keywords ([40b45b2a](https://github.com/pixelfed/pixelfed/commit/40b45b2a))
+- Added Software Update banner to admin home feeds ([b0fb1988](https://github.com/pixelfed/pixelfed/commit/b0fb1988))
+
+### Updated
+
+- Update ApiV1Controller, fix network timeline ([0faf59e3](https://github.com/pixelfed/pixelfed/commit/0faf59e3))
+- Update public/network timelines, fix non-redis response and fix reblogs in home feed ([8b4ac5cc](https://github.com/pixelfed/pixelfed/commit/8b4ac5cc))
+- Update Federation, use proper Content-Type headers for following/follower collections ([fb0bb9a3](https://github.com/pixelfed/pixelfed/commit/fb0bb9a3))
+- Update ActivityPubFetchService, enforce stricter Content-Type validation ([1232cfc8](https://github.com/pixelfed/pixelfed/commit/1232cfc8))
+- Update status view, fix unlisted/private scope bug ([0f3ca194](https://github.com/pixelfed/pixelfed/commit/0f3ca194))
+
+## [v0.11.11 (2024-02-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.10...v0.11.11)
+
+### Fixes
+- Fix api endpoints ([fd7f5dbb](https://github.com/pixelfed/pixelfed/commit/fd7f5dbb))
+
+## [v0.11.10 (2024-02-09)](https://github.com/pixelfed/pixelfed/compare/v0.11.9...v0.11.10)
 
 ### Added
 - Resilient Media Storage ([#4665](https://github.com/pixelfed/pixelfed/pull/4665)) ([fb1deb6](https://github.com/pixelfed/pixelfed/commit/fb1deb6))
@@ -12,11 +34,14 @@
 - Added `app:hashtag-cached-count-update` command to update cached_count of hashtags and add to scheduler to run every 25 minutes past the hour ([1e31fee6](https://github.com/pixelfed/pixelfed/commit/1e31fee6))
 - Added `app:hashtag-related-generate` command to generate related hashtags ([176b4ed7](https://github.com/pixelfed/pixelfed/commit/176b4ed7))
 - Added Mutual Followers API endpoint ([33dbbe46](https://github.com/pixelfed/pixelfed/commit/33dbbe46))
+- Added User Domain Blocks ([#4834](https://github.com/pixelfed/pixelfed/pull/4834)) ([fa0380ac](https://github.com/pixelfed/pixelfed/commit/fa0380ac))
+- Added Parental Controls ([#4862](https://github.com/pixelfed/pixelfed/pull/4862)) ([c91f1c59](https://github.com/pixelfed/pixelfed/commit/c91f1c59))
+- Added Forgot Email Feature ([67c650b1](https://github.com/pixelfed/pixelfed/commit/67c650b1))
+- Added S3 IG Import Media Storage support ([#4891](https://github.com/pixelfed/pixelfed/pull/4891)) ([081360b9](https://github.com/pixelfed/pixelfed/commit/081360b9))
 
 ### Federation
 - Update Privacy Settings, add support for Mastodon `indexable` search flag ([fc24630e](https://github.com/pixelfed/pixelfed/commit/fc24630e))
 - Update AP Helpers, consume actor `indexable` attribute ([fbdcdd9d](https://github.com/pixelfed/pixelfed/commit/fbdcdd9d))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
 
 ### Updates
 - Update FollowerService, add forget method to RelationshipService call to reduce load when mass purging ([347e4f59](https://github.com/pixelfed/pixelfed/commit/347e4f59))
@@ -80,7 +105,27 @@
 - Update Inbox, improve tombstone query efficiency ([759a4393](https://github.com/pixelfed/pixelfed/commit/759a4393))
 - Update AccountService, add setLastActive method ([ebbd98e7](https://github.com/pixelfed/pixelfed/commit/ebbd98e7))
 - Update ApiV1Controller, set last_active_at ([b6419545](https://github.com/pixelfed/pixelfed/commit/b6419545))
--  ([](https://github.com/pixelfed/pixelfed/commit/))
+- Update AdminShadowFilter, fix deleted profile bug ([a492a95a](https://github.com/pixelfed/pixelfed/commit/a492a95a))
+- Update FollowerService, add $silent param to remove method to more efficently purge relationships ([1664a5bc](https://github.com/pixelfed/pixelfed/commit/1664a5bc))
+- Update AP ProfileTransformer, add published attribute ([adfaa2b1](https://github.com/pixelfed/pixelfed/commit/adfaa2b1))
+- Update meta tags, improve descriptions and seo/og tags ([fd44c80c](https://github.com/pixelfed/pixelfed/commit/fd44c80c))
+- Update login view, add email prefill logic ([d76f0168](https://github.com/pixelfed/pixelfed/commit/d76f0168))
+- Update LoginController, fix captcha validation error message ([0325e171](https://github.com/pixelfed/pixelfed/commit/0325e171))
+- Update ApiV1Controller, properly cast boolean sensitive parameter. Fixes #4888 ([0aff126a](https://github.com/pixelfed/pixelfed/commit/0aff126a))
+- Update AccountImport.vue, fix new IG export format ([59aa6a4b](https://github.com/pixelfed/pixelfed/commit/59aa6a4b))
+- Update TransformImports command, fix import service condition ([32c59f04](https://github.com/pixelfed/pixelfed/commit/32c59f04))
+- Update AP helpers, more efficently update post count ([7caed381](https://github.com/pixelfed/pixelfed/commit/7caed381))
+- Update AP helpers, refactor post count decrement logic ([b81ae577](https://github.com/pixelfed/pixelfed/commit/b81ae577))
+- Update AP helpers, fix sensitive bug ([00ed330c](https://github.com/pixelfed/pixelfed/commit/00ed330c))
+- Update NotificationEpochUpdatePipeline, use more efficient query ([4d401389](https://github.com/pixelfed/pixelfed/commit/4d401389))
+- Update notification pipelines, fix non-local saving ([fa97a1f3](https://github.com/pixelfed/pixelfed/commit/fa97a1f3))
+- Update NodeinfoService, disable redirects ([240e6bbe](https://github.com/pixelfed/pixelfed/commit/240e6bbe))
+- Update Instance model, add entity casts ([289cad47](https://github.com/pixelfed/pixelfed/commit/289cad47))
+- Update FetchNodeinfoPipeline, use more efficient dispatch ([ac01f51a](https://github.com/pixelfed/pixelfed/commit/ac01f51a))
+- Update horizon.php config ([1e3acade](https://github.com/pixelfed/pixelfed/commit/1e3acade))
+- Update PublicApiController, consume InstanceService blocked domains for account and statuses endpoints ([01b33fb3](https://github.com/pixelfed/pixelfed/commit/01b33fb3))
+- Update ApiV1Controller, enforce blocked instance domain logic ([5b284cac](https://github.com/pixelfed/pixelfed/commit/5b284cac))
+- Update ApiV2Controller, add vapid key to instance object. Thanks thisismissem! ([4d02d6f1](https://github.com/pixelfed/pixelfed/commit/4d02d6f1))
 
 ## [v0.11.9 (2023-08-21)](https://github.com/pixelfed/pixelfed/compare/v0.11.8...v0.11.9)
 

@@ -39,10 +39,9 @@ use App\Jobs\HomeFeedPipeline\FeedInsertRemotePipeline;
 use App\Util\Media\License;
 use App\Models\Poll;
 use Illuminate\Contracts\Cache\LockTimeoutException;
-use App\Jobs\ProfilePipeline\IncrementPostCount;
-use App\Jobs\ProfilePipeline\DecrementPostCount;
 use App\Services\DomainService;
 use App\Services\UserFilterService;
+use App\Services\Account\AccountStatService;
 
 class Helpers {
 
@@ -316,6 +315,23 @@ class Helpers {
             return;
         }
 
+        if(config('autospam.live_filters.enabled')) {
+            $filters = config('autospam.live_filters.filters');
+            if(!empty($filters) && isset($res['content']) && !empty($res['content']) && strlen($filters) > 3) {
+                $filters = array_map('trim', explode(',', $filters));
+                $content = $res['content'];
+                foreach($filters as $filter) {
+                    $filter = trim($filter);
+                    if(!$filter || !strlen($filter)) {
+                        continue;
+                    }
+                    if(str_contains($content, $filter)) {
+                        return;
+                    }
+                }
+            }
+        }
+
         if(isset($res['object'])) {
             $activity = $res;
         } else {
@@ -372,6 +388,10 @@ class Helpers {
         $id = isset($res['id']) ? self::pluckval($res['id']) : self::pluckval($url);
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
+
+        if($idDomain && $urlDomain && strtolower($idDomain) !== strtolower($urlDomain)) {
+            return;
+        }
 
         if(!self::validateUrl($id)) {
             return;
@@ -456,11 +476,18 @@ class Helpers {
 
     public static function storeStatus($url, $profile, $activity)
     {
+        $originalUrl = $url;
         $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($activity['url']);
         $url = isset($activity['url']) && is_string($activity['url']) ? self::pluckval($activity['url']) : self::pluckval($id);
         $idDomain = parse_url($id, PHP_URL_HOST);
         $urlDomain = parse_url($url, PHP_URL_HOST);
+        $originalUrlDomain = parse_url($originalUrl, PHP_URL_HOST);
         if(!self::validateUrl($id) || !self::validateUrl($url)) {
+            return;
+        }
+
+        if( strtolower($originalUrlDomain) !== strtolower($idDomain) ||
+            strtolower($originalUrlDomain) !== strtolower($urlDomain) ) {
             return;
         }
 
@@ -536,7 +563,7 @@ class Helpers {
             }
         }
 
-        IncrementPostCount::dispatch($pid)->onQueue('low');
+        AccountStatService::incrementPostCount($pid);
 
         if( $status->in_reply_to_id === null &&
             in_array($status->type, ['photo', 'photo:album', 'video', 'video:album', 'photo:video:album'])
@@ -549,10 +576,11 @@ class Helpers {
 
     public static function getSensitive($activity, $url)
     {
-        $id = isset($activity['id']) ? self::pluckval($activity['id']) : self::pluckval($url);
-        $url = isset($activity['url']) ? self::pluckval($activity['url']) : $id;
-        $urlDomain = parse_url($url, PHP_URL_HOST);
+        if(!$url || !strlen($url)) {
+            return true;
+        }
 
+        $urlDomain = parse_url($url, PHP_URL_HOST);
         $cw = isset($activity['sensitive']) ? (bool) $activity['sensitive'] : false;
 
         if(in_array($urlDomain, InstanceService::getNsfwDomains())) {
@@ -763,7 +791,11 @@ class Helpers {
         if(!$res || isset($res['id']) == false) {
             return;
         }
+        $urlDomain = parse_url($url, PHP_URL_HOST);
         $domain = parse_url($res['id'], PHP_URL_HOST);
+        if(strtolower($urlDomain) !== strtolower($domain)) {
+            return;
+        }
         if(!isset($res['preferredUsername']) && !isset($res['nickname'])) {
             return;
         }
@@ -831,6 +863,9 @@ class Helpers {
 
     public static function sendSignedObject($profile, $url, $body)
     {
+        if(app()->environment() !== 'production') {
+            return;
+        }
         ActivityPubDeliveryService::queue()
             ->from($profile)
             ->to($url)
